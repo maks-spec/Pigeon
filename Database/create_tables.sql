@@ -1,0 +1,43 @@
+CREATE DATABASE Pigeon;
+GO
+
+USE Pigeon;
+GO
+
+CREATE TABLE Users (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    PhoneNumber NVARCHAR(20) UNIQUE NOT NULL,
+    Username NVARCHAR(50) UNIQUE NOT NULL,
+    AvatarUrl NVARCHAR(255),
+    VerificationCode NVARCHAR(6),
+    IsVerified BIT DEFAULT 0,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE Chats (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    IsGroup BIT DEFAULT 0,
+    Name NVARCHAR(100),
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE UserChats (
+    UserId INT FOREIGN KEY REFERENCES Users(Id),
+    ChatId INT FOREIGN KEY REFERENCES Chats(Id),
+    PRIMARY KEY (UserId, ChatId)
+);
+
+CREATE TABLE Messages (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    ChatId INT FOREIGN KEY REFERENCES Chats(Id),
+    SenderId INT FOREIGN KEY REFERENCES Users(Id),
+    Content NVARCHAR(MAX),
+    SentAt DATETIME DEFAULT GETDATE(),
+    IsRead BIT DEFAULT 0
+);
+
+CREATE TABLE Contacts (
+    UserId INT FOREIGN KEY REFERENCES Users(Id),
+    ContactId INT FOREIGN KEY REFERENCES Users(Id),
+    PRIMARY KEY (UserId, ContactId)
+);

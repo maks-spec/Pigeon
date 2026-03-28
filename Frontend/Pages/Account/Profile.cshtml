@@ -1,0 +1,632 @@
+@page
+@model Frontend.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "Профиль";
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .profile-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .profile-box {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .profile-header h2 {
+        color: #667eea;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 20px auto;
+        border: 4px solid #667eea;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .avatar-large:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .profile-section {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .profile-section h3 {
+        color: #2d3748;
+        margin-bottom: 15px;
+        font-size: 18px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .profile-section h3 i {
+        color: #667eea;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        width: 120px;
+        color: #718096;
+        font-weight: 500;
+    }
+
+    .info-value {
+        flex: 1;
+        color: #2d3748;
+    }
+
+    .edit-btn {
+        color: #667eea;
+        background: none;
+        border: 1px solid #667eea;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 10px;
+    }
+
+    .edit-btn:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    .security-btn {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        text-decoration: none;
+        color: #2d3748;
+        transition: all 0.3s ease;
+    }
+
+    .security-btn:hover {
+        border-color: #667eea;
+        transform: translateX(5px);
+        box-shadow: 0 4px 10px rgba(102, 126, 234, 0.1);
+    }
+
+    .security-btn .icon {
+        font-size: 24px;
+        margin-right: 15px;
+    }
+
+    .security-btn .text {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    .security-btn .arrow {
+        color: #667eea;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .logout-btn {
+        width: 100%;
+        padding: 14px;
+        background: #e53e3e;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+    .logout-btn:hover {
+        background: #c53030;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
+    }
+
+    .back-btn {
+        display: inline-block;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+        text-decoration: underline;
+    }
+
+    /* Модальное окно для редактирования */
+    .modal {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 400px;
+        position: relative;
+    }
+
+    .close {
+        position: absolute;
+        right: 20px;
+        top: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .close:hover {
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .save-btn {
+        width: 100%;
+        padding: 14px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .save-btn:hover {
+        background: #5a67d8;
+    }
+
+    .avatar-edit {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 20px;
+        cursor: pointer;
+    }
+
+    .avatar-edit img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #667eea;
+    }
+
+    .avatar-edit-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        color: white;
+        font-size: 12px;
+    }
+
+    .avatar-edit:hover .avatar-edit-overlay {
+        opacity: 1;
+    }
+
+    .message {
+        margin-top: 20px;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        text-align: center;
+        display: none;
+    }
+
+    .message.error {
+        display: block;
+        color: #c53030;
+        background: #fff5f5;
+        border: 1px solid #feb2b2;
+    }
+
+    .message.success {
+        display: block;
+        color: #22543d;
+        background: #c6f6d5;
+        border: 1px solid #9ae6b4;
+    }
+
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-box">
+        <a href="/Chats" class="back-btn">← Назад к чатам</a>
+        
+        <div class="profile-header">
+            <h2>Профиль</h2>
+            <img src="" alt="Avatar" class="avatar-large" id="avatarLarge" 
+                 onclick="openAvatarEditor()"
+                 onerror="this.src='/images/default-avatar.png'" />
+        </div>
+
+        <div class="profile-section">
+            <h3><i>👤</i> Личная информация</h3>
+            <div class="info-row">
+                <span class="info-label">Имя:</span>
+                <span class="info-value" id="displayUsername">Загрузка...</span>
+                <button class="edit-btn" onclick="openNameEditor()">✏️ Изменить</button>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Телефон:</span>
+                <span class="info-value" id="displayPhone"></span>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h3><i>🔒</i> Безопасность</h3>
+            <a href="/Account/ChangePassword" class="security-btn">
+                <span class="icon">🔐</span>
+                <span class="text">Сменить пароль</span>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+
+        <!-- НОВЫЙ БЛОК: Группы -->
+        <div class="profile-section">
+            <h3><i>👥</i> Группы</h3>
+            <a href="/Groups" class="security-btn">
+                <span class="icon">➕</span>
+                <span class="text">Создать группу</span>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">Выйти из аккаунта</button>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования имени -->
+<div id="nameModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeNameEditor()">&times;</span>
+        <h3 style="margin-bottom: 20px;">Изменить имя</h3>
+        <div class="form-group">
+            <label>Новое имя</label>
+            <input type="text" id="editNameInput" class="form-control" />
+        </div>
+        <button class="save-btn" onclick="saveName()">Сохранить</button>
+        <div id="nameMessage" class="message"></div>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования аватара -->
+<div id="avatarModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAvatarEditor()">&times;</span>
+        <h3 style="margin-bottom: 20px;">Изменить аватар</h3>
+        
+        <div class="avatar-edit" onclick="document.getElementById('avatarFileInput').click()">
+            <img id="modalAvatar" src="" alt="Avatar" />
+            <div class="avatar-edit-overlay">Выбрать фото</div>
+        </div>
+        
+        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="previewAvatar(this)" />
+        
+        <button class="save-btn" onclick="saveAvatar()">Загрузить</button>
+        <div id="avatarMessage" class="message"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserProfile();
+        });
+
+        function loadUserProfile() {
+            const userId = sessionStorage.getItem('userId');
+            const username = sessionStorage.getItem('username');
+            const phoneNumber = sessionStorage.getItem('phoneNumber');
+            let avatarUrl = sessionStorage.getItem('avatarUrl');
+
+            if (!userId) {
+                window.location.href = '/Account/Login';
+                return;
+            }
+
+            // Формируем полный URL аватара
+            let fullAvatarUrl = '/images/default-avatar.png';
+            if (avatarUrl && avatarUrl !== 'null' && avatarUrl !== '') {
+                if (avatarUrl.startsWith('http')) {
+                    fullAvatarUrl = avatarUrl;
+                } else if (avatarUrl.startsWith('/')) {
+                    fullAvatarUrl = `http://192.168.1.132:5072${avatarUrl}`;
+                } else {
+                    fullAvatarUrl = `http://192.168.1.132:5072/uploads/avatars/${avatarUrl}`;
+                }
+            }
+
+            currentUser = {
+                id: parseInt(userId),
+                username: username,
+                phoneNumber: phoneNumber || 'Номер не указан',
+                avatarUrl: fullAvatarUrl
+            };
+
+            document.getElementById('displayUsername').textContent = username;
+            document.getElementById('displayPhone').textContent = currentUser.phoneNumber;
+            
+            const avatarElement = document.getElementById('avatarLarge');
+            avatarElement.src = currentUser.avatarUrl;
+            avatarElement.onerror = function() {
+                this.src = '/images/default-avatar.png';
+            };
+        }
+
+        function openNameEditor() {
+            document.getElementById('editNameInput').value = currentUser.username;
+            document.getElementById('nameModal').style.display = 'flex';
+        }
+
+        function closeNameEditor() {
+            document.getElementById('nameModal').style.display = 'none';
+            document.getElementById('nameMessage').style.display = 'none';
+        }
+
+        async function saveName() {
+            const newName = document.getElementById('editNameInput').value.trim();
+            const messageDiv = document.getElementById('nameMessage');
+            
+            if (!newName) {
+                messageDiv.textContent = 'Введите имя';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('username', newName);
+
+            try {
+                const response = await fetch(`http://192.168.1.132:5072/api/users/${currentUser.id}/profile`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    currentUser.username = result.username;
+                    sessionStorage.setItem('username', result.username);
+                    
+                    document.getElementById('displayUsername').textContent = result.username;
+                    
+                    messageDiv.textContent = '✅ Имя успешно изменено';
+                    messageDiv.classList.add('success');
+                    messageDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeNameEditor();
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    messageDiv.textContent = '❌ ' + (error.message || 'Ошибка');
+                    messageDiv.classList.add('error');
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.textContent = '❌ Ошибка соединения';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+            }
+        }
+
+        function openAvatarEditor() {
+            document.getElementById('modalAvatar').src = currentUser.avatarUrl;
+            document.getElementById('avatarModal').style.display = 'flex';
+        }
+
+        function closeAvatarEditor() {
+            document.getElementById('avatarModal').style.display = 'none';
+            document.getElementById('avatarMessage').style.display = 'none';
+            document.getElementById('avatarFileInput').value = '';
+        }
+
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('modalAvatar').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function saveAvatar() {
+            const fileInput = document.getElementById('avatarFileInput');
+            const messageDiv = document.getElementById('avatarMessage');
+            
+            if (!fileInput.files || !fileInput.files[0]) {
+                messageDiv.textContent = 'Выберите файл';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('avatar', fileInput.files[0]);
+
+            try {
+                const response = await fetch(`http://192.168.1.132:5072/api/users/${currentUser.id}/profile`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    if (result.avatarUrl) {
+                        // Правильно формируем URL аватара
+                        let fullAvatarUrl;
+                        if (result.avatarUrl.startsWith('http')) {
+                            fullAvatarUrl = result.avatarUrl;
+                        } else if (result.avatarUrl.startsWith('/')) {
+                            fullAvatarUrl = `http://192.168.1.132:5072${result.avatarUrl}`;
+                        } else {
+                            fullAvatarUrl = `http://192.168.1.132:5072/uploads/avatars/${result.avatarUrl}`;
+                        }
+                        currentUser.avatarUrl = fullAvatarUrl;
+                        sessionStorage.setItem('avatarUrl', result.avatarUrl);
+                        
+                        document.getElementById('avatarLarge').src = fullAvatarUrl;
+                    }
+                    
+                    messageDiv.textContent = '✅ Аватар обновлен';
+                    messageDiv.classList.add('success');
+                    messageDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeAvatarEditor();
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    messageDiv.textContent = '❌ ' + (error.message || 'Ошибка');
+                    messageDiv.classList.add('error');
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.textContent = '❌ Ошибка соединения';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            localStorage.clear();
+            window.location.href = '/Account/Login';
+        }
+
+        window.onclick = function(event) {
+            const nameModal = document.getElementById('nameModal');
+            const avatarModal = document.getElementById('avatarModal');
+            
+            if (event.target === nameModal) {
+                closeNameEditor();
+            }
+            if (event.target === avatarModal) {
+                closeAvatarEditor();
+            }
+        }
+    </script>
+}

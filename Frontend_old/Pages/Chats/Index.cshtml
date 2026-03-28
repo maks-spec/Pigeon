@@ -1,0 +1,41 @@
+@page
+@model Frontend.Pages.Chats.IndexModel
+@{
+    ViewData["Title"] = "Чаты";
+}
+
+<div class="chats-container">
+    <div class="sidebar">
+        <div class="user-info">
+            <img src="@Model.CurrentUser?.AvatarUrl ?? '/images/default-avatar.png'" 
+                 alt="Avatar" 
+                 class="avatar" />
+            <span class="username">@Model.CurrentUser?.Username</span>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" 
+                   id="searchInput" 
+                   placeholder="Поиск по номеру телефона..." />
+            <button onclick="searchUser()" class="btn-search">Найти</button>
+        </div>
+        
+        <div id="searchResult" class="search-result"></div>
+        
+        <div class="chats-list">
+            <h3>Чаты</h3>
+            <div id="chatsList"></div>
+        </div>
+    </div>
+    
+    <div class="chat-area" id="chatArea">
+        <div class="no-chat-selected">
+            <p>Выберите чат для начала общения</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script src="/js/chat.js"></script>
+}

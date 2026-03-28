@@ -1,0 +1,501 @@
+@page
+@model Frontend.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Вход";
+}
+
+@section Head {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+}
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .auth-box {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    h1 {
+        color: #667eea;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 36px;
+    }
+    
+    h2 {
+        color: #333;
+        font-size: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .tab-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .tab-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        background: #f0f0f0;
+        color: #666;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .tab-btn.active {
+        background: #667eea;
+        color: white;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        padding: 14px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    
+    .btn-primary:hover {
+        background: #5a67d8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    .message {
+        margin-top: 20px;
+        padding: 12px;
+        border-radius: 5px;
+        text-align: center;
+        display: none;
+    }
+    
+    .message.error {
+        display: block;
+        color: #c53030;
+        background: #fff5f5;
+        border: 1px solid #feb2b2;
+    }
+    
+    .message.success {
+        display: block;
+        color: #22543d;
+        background: #c6f6d5;
+        border: 1px solid #9ae6b4;
+    }
+    
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Стили для маски телефона */
+    .iti {
+        width: 100%;
+    }
+    .iti__flag-container {
+        z-index: 2;
+    }
+    .form-control {
+        padding-left: 52px !important;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-box">
+        <h1>Pigeon</h1>
+        
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="loginTab" onclick="switchTab('login')">Вход</button>
+            <button class="tab-btn" id="registerTab" onclick="switchTab('register')">Регистрация</button>
+        </div>
+        
+        <!-- Форма входа -->
+        <form id="loginForm" style="display: block;">
+            <h2>Вход в аккаунт</h2>
+            <div class="form-group">
+                <label>Номер телефона</label>
+                <input type="tel" id="loginPhone" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="Введите пароль" required />
+            </div>
+            <button type="submit" class="btn-primary" id="loginSubmitBtn">Войти</button>
+        </form>
+        
+        <!-- Форма регистрации -->
+        <form id="registerForm" style="display: none;">
+            <h2>Регистрация</h2>
+            <div class="form-group">
+                <label>Номер телефона</label>
+                <input type="tel" id="registerPhone" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label>Имя пользователя</label>
+                <input type="text" id="registerUsername" class="form-control" placeholder="Введите имя" required />
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="registerPassword" class="form-control" placeholder="Придумайте пароль" required />
+            </div>
+            <button type="submit" class="btn-primary" id="registerSubmitBtn">Зарегистрироваться</button>
+        </form>
+        
+        <div id="message" class="message"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script>
+        // Функция для сохранения данных пользователя (работает и на телефонах)
+        function saveUserData(user) {
+            // Сохраняем в sessionStorage (для текущей сессии)
+            sessionStorage.setItem('userId', user.id);
+            sessionStorage.setItem('username', user.username);
+            sessionStorage.setItem('phoneNumber', user.phoneNumber);
+            sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
+            
+            // Дублируем в localStorage (для постоянного хранения на телефонах)
+            localStorage.setItem('userId', user.id);
+            localStorage.setItem('username', user.username);
+            localStorage.setItem('phoneNumber', user.phoneNumber);
+            localStorage.setItem('avatarUrl', user.avatarUrl || '');
+            
+            console.log('✅ Данные сохранены в sessionStorage и localStorage');
+        }
+        
+        // Функция для получения данных пользователя (проверяет оба хранилища)
+        function getUserData() {
+            let userId = sessionStorage.getItem('userId');
+            let username = sessionStorage.getItem('username');
+            let phoneNumber = sessionStorage.getItem('phoneNumber');
+            let avatarUrl = sessionStorage.getItem('avatarUrl');
+            
+            // Если в sessionStorage нет, пробуем взять из localStorage
+            if (!userId || userId === 'null') {
+                userId = localStorage.getItem('userId');
+                username = localStorage.getItem('username');
+                phoneNumber = localStorage.getItem('phoneNumber');
+                avatarUrl = localStorage.getItem('avatarUrl');
+                
+                if (userId && userId !== 'null') {
+                    // Восстанавливаем в sessionStorage
+                    sessionStorage.setItem('userId', userId);
+                    sessionStorage.setItem('username', username);
+                    sessionStorage.setItem('phoneNumber', phoneNumber);
+                    sessionStorage.setItem('avatarUrl', avatarUrl);
+                    console.log('🔄 Данные восстановлены из localStorage');
+                }
+            }
+            
+            return { userId, username, phoneNumber, avatarUrl };
+        }
+        
+        // Функция для проверки авторизации и перенаправления
+        function checkAuthAndRedirect() {
+            const { userId, username } = getUserData();
+            
+            console.log('Проверка авторизации:', { userId, username });
+            
+            if (userId && userId !== 'null' && userId !== 'undefined' && userId !== '') {
+                console.log('✅ Пользователь авторизован, перенаправляем в чаты');
+                window.location.replace('/Chats');
+                return true;
+            }
+            console.log('❌ Пользователь не авторизован');
+            return false;
+        }
+        
+        // ПРОВЕРКА ПРИ ЗАГРУЗКЕ
+        checkAuthAndRedirect();
+
+        let loginIti, registerIti;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ещё раз проверяем
+            if (checkAuthAndRedirect()) return;
+
+            // Инициализация маски для поля входа
+            const loginInput = document.getElementById('loginPhone');
+            if (loginInput) {
+                loginIti = window.intlTelInput(loginInput, {
+                    initialCountry: "ru",
+                    separateDialCode: true,
+                    preferredCountries: ["ru", "by", "kz", "ua"],
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                    autoPlaceholder: "polite",
+                    formatOnDisplay: true
+                });
+            }
+
+            // Инициализация маски для поля регистрации
+            const registerInput = document.getElementById('registerPhone');
+            if (registerInput) {
+                registerIti = window.intlTelInput(registerInput, {
+                    initialCountry: "ru",
+                    separateDialCode: true,
+                    preferredCountries: ["ru", "by", "kz", "ua"],
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                    autoPlaceholder: "polite",
+                    formatOnDisplay: true
+                });
+            }
+        });
+
+        function switchTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('loginTab').classList.add('active');
+                document.getElementById('registerTab').classList.remove('active');
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            } else {
+                document.getElementById('registerTab').classList.add('active');
+                document.getElementById('loginTab').classList.remove('active');
+                document.getElementById('registerForm').style.display = 'block';
+                document.getElementById('loginForm').style.display = 'none';
+            }
+            document.getElementById('message').style.display = 'none';
+        }
+
+        // Обработка входа
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullPhoneNumber = loginIti.getNumber();
+            const password = document.getElementById('loginPassword').value;
+            const messageDiv = document.getElementById('message');
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            
+            messageDiv.style.display = 'none';
+            messageDiv.classList.remove('error', 'success');
+            
+            if (!loginIti.isValidNumber()) {
+                messageDiv.textContent = 'Введите корректный номер телефона';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!password) {
+                messageDiv.textContent = 'Введите пароль';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+            
+            const data = {
+                phoneNumber: fullPhoneNumber,
+                password: password
+            };
+            
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<span class="loading"></span> Вход...';
+            submitBtn.disabled = true;
+            
+            try {
+                console.log('Отправка запроса на вход');
+                
+                const response = await fetch('http://192.168.1.132:5072/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    
+                    console.log('Вход успешен, сохраняем данные:', user);
+                    
+                    // Сохраняем данные в оба хранилища
+                    saveUserData(user);
+                    
+                    messageDiv.textContent = '✅ Вход выполнен! Перенаправление...';
+                    messageDiv.classList.add('success');
+                    messageDiv.style.display = 'block';
+                    
+                    // Перенаправляем в чаты
+                    setTimeout(() => {
+                        window.location.replace('/Chats');
+                    }, 500);
+                } else {
+                    const error = await response.json();
+                    console.error('Ошибка входа:', error);
+                    messageDiv.textContent = error.message || 'Неверный номер телефона или пароль';
+                    messageDiv.classList.add('error');
+                    messageDiv.style.display = 'block';
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Ошибка соединения:', error);
+                messageDiv.textContent = 'Ошибка соединения с сервером. Проверьте, запущен ли сервер.';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Обработка регистрации
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullPhoneNumber = registerIti.getNumber();
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const messageDiv = document.getElementById('message');
+            const submitBtn = document.getElementById('registerSubmitBtn');
+            
+            messageDiv.style.display = 'none';
+            messageDiv.classList.remove('error', 'success');
+            
+            if (!registerIti.isValidNumber()) {
+                messageDiv.textContent = 'Введите корректный номер телефона';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!username) {
+                messageDiv.textContent = 'Введите имя пользователя';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!password) {
+                messageDiv.textContent = 'Введите пароль';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+            
+            if (password.length < 6) {
+                messageDiv.textContent = 'Пароль должен содержать минимум 6 символов';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+            
+            const data = {
+                phoneNumber: fullPhoneNumber,
+                username: username,
+                password: password
+            };
+            
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<span class="loading"></span> Регистрация...';
+            submitBtn.disabled = true;
+            
+            try {
+                console.log('Отправка запроса на регистрацию');
+                
+                const response = await fetch('http://192.168.1.132:5072/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    
+                    console.log('Регистрация успешна, сохраняем данные:', user);
+                    
+                    // Сохраняем данные в оба хранилища
+                    saveUserData(user);
+                    
+                    messageDiv.textContent = '✅ Регистрация успешна! Перенаправление...';
+                    messageDiv.classList.add('success');
+                    messageDiv.style.display = 'block';
+                    
+                    // Перенаправляем в чаты
+                    setTimeout(() => {
+                        window.location.replace('/Chats');
+                    }, 500);
+                } else {
+                    const error = await response.json();
+                    console.error('Ошибка регистрации:', error);
+                    messageDiv.textContent = error.message || 'Ошибка регистрации. Возможно, номер уже занят';
+                    messageDiv.classList.add('error');
+                    messageDiv.style.display = 'block';
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Ошибка соединения:', error);
+                messageDiv.textContent = 'Ошибка соединения с сервером. Проверьте, запущен ли сервер.';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+}

@@ -1,0 +1,35 @@
+@section Scripts {
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userId = formData.get('UserId');
+            
+            const response = await fetch(`http://localhost:5072/api/users/${userId}/register`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const user = await response.json();
+                sessionStorage.setItem('userId', user.id);
+                sessionStorage.setItem('username', user.username);
+                sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
+                window.location.href = '/Chats';
+            } else {
+                document.getElementById('message').textContent = 'Ошибка регистрации';
+            }
+        });
+    </script>
+}

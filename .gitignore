@@ -1,0 +1,37 @@
+# .NET
+**/bin/
+**/obj/
+**/packages/
+**/node_modules/
+**/out/
+**/publish/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Logs
+**/logs/
+*.log
+*.logs
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Frontend
+Frontend/wwwroot/lib/
+Frontend/.temp/
+Frontend/.cache/
+
+# Backend
+Backend/Data/
+Backend/Migrations/
+
+# Secrets
+appsettings.Development.json
+*.secrets.json

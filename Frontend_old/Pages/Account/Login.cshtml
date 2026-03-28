@@ -1,0 +1,20 @@
+@section Scripts {
+    <script>
+        document.getElementById('phoneForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const phone = e.target.PhoneNumber.value;
+            const response = await fetch('http://localhost:5072/api/auth/send-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(phone)
+            });
+            
+            if (response.ok) {
+                window.location.href = `/Account/VerifyCode?phone=${encodeURIComponent(phone)}`;
+            } else {
+                document.getElementById('message').textContent = 'Ошибка отправки кода';
+            }
+        });
+    </script>
+}

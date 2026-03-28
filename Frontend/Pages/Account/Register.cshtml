@@ -1,0 +1,345 @@
+@page
+@model Frontend.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .auth-box {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+    
+    .auth-box h2 {
+        color: #667eea;
+        margin-bottom: 30px;
+        font-size: 28px;
+        font-weight: 600;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+        text-align: left;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 500;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        height: 52px;
+        line-height: normal;
+        box-sizing: border-box;
+        background: #fafafa;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-control:hover {
+        border-color: #999;
+        background: white;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        padding: 14px 20px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-primary:hover {
+        background: #5a67d8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    .message {
+        margin-top: 20px;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        text-align: center;
+        display: none; /* Скрыто по умолчанию */
+    }
+    
+    .message.error {
+        display: block;
+        color: #c53030;
+        background: #fff5f5;
+        border: 1px solid #feb2b2;
+    }
+    
+    .message.success {
+        display: block;
+        color: #22543d;
+        background: #c6f6d5;
+        border: 1px solid #9ae6b4;
+    }
+    
+    /* Стили для аватара - убрана надпись */
+    .avatar-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 3px dashed #667eea;
+        cursor: pointer;
+        margin: 15px auto;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: #f7f7f8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .avatar-preview:hover {
+        border-color: #5a67d8;
+        background: #f0f0f0;
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .avatar-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .avatar-preview:hover img {
+        transform: scale(1.05);
+    }
+    
+    /* Заглушка для пустого аватара */
+    .avatar-preview.empty {
+        background: #f0f0f0;
+        position: relative;
+    }
+    
+    .avatar-preview.empty::before {
+        content: '';
+        width: 50px;
+        height: 50px;
+        background: #667eea;
+        border-radius: 50%;
+        opacity: 0.3;
+    }
+    
+    /* Скрытый input file */
+    input[type="file"] {
+        display: none;
+    }
+    
+    /* Ссылка */
+    a {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+        margin-top: 20px;
+        transition: color 0.3s ease;
+        font-weight: 500;
+    }
+    
+    a:hover {
+        color: #5a67d8;
+        text-decoration: underline;
+    }
+    
+    /* Анимация загрузки */
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Завершение регистрации</h2>
+        
+        <form method="post" enctype="multipart/form-data" id="registerForm">
+            <input type="hidden" name="UserId" value="@Model.UserId" />
+            
+            <div class="form-group">
+                <label>Имя пользователя</label>
+                <input type="text" 
+                       name="Username" 
+                       class="form-control" 
+                       placeholder="Введите ваше имя"
+                       required />
+            </div>
+            
+            <div class="form-group">
+                <label>Аватар (необязательно)</label>
+                <div class="avatar-preview" id="avatarPreview" onclick="document.getElementById('avatarInput').click()">
+                    <img id="avatarImage" src="/images/default-avatar.png" alt="Avatar" style="display: none;" />
+                </div>
+                <input type="file" 
+                       id="avatarInput" 
+                       name="Avatar" 
+                       accept="image/*"
+                       onchange="previewAvatar(this)" />
+            </div>
+            
+            <button type="submit" class="btn-primary" id="submitBtn">Завершить регистрацию</button>
+            <div id="message" class="message"></div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewAvatar(input) {
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatarImage = document.getElementById('avatarImage');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    avatarImage.src = e.target.result;
+                    avatarImage.style.display = 'block';
+                    avatarPreview.classList.remove('empty');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            const messageDiv = document.getElementById('message');
+            
+            // Скрываем предыдущие сообщения
+            messageDiv.style.display = 'none';
+            messageDiv.classList.remove('error', 'success');
+            
+            const formData = new FormData(e.target);
+            const userId = formData.get('UserId');
+            const username = formData.get('Username');
+            
+            if (!username.trim()) {
+                messageDiv.textContent = 'Введите имя пользователя';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                return;
+            }
+            
+            // Показываем загрузку
+            submitBtn.innerHTML = '<span class="loading"></span> Регистрация...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`http://192.168.1.132:5072/api/users/${userId}/register`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    sessionStorage.setItem('userId', user.id);
+                    sessionStorage.setItem('username', user.username);
+                    sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
+                    sessionStorage.setItem('phoneNumber', user.phoneNumber || '');
+                    window.location.href = '/Chats';
+                } else {
+                    const errorText = await response.text();
+                    let errorMessage = 'Ошибка регистрации';
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        errorMessage = errorJson.message || errorMessage;
+                    } catch {
+                        errorMessage = errorText || errorMessage;
+                    }
+                    
+                    messageDiv.textContent = errorMessage;
+                    messageDiv.classList.add('error');
+                    messageDiv.style.display = 'block';
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Ошибка соединения с сервером';
+                messageDiv.classList.add('error');
+                messageDiv.style.display = 'block';
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+}
